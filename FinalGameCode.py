@@ -231,17 +231,17 @@ def load_maze(filename):
 #work the game and what happens 
 def main():
     LEVEL=1
-    LOCATION=3
+    LOCATION=1
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Final Game--LEVEL 1")
     clock = pygame.time.Clock()
     running=True
-    file="L"+str(LEVEL)+"L"+str(LOCATION)
+    file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, exit_sprites, cabin, housewall_sprites = load_maze(file)
     collidedkeybush=False
     inventory=[]
     level_won=False
-    
+    keys = pygame.key.get_pressed()
     while running:
       for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -253,7 +253,7 @@ def main():
               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
               if cave and pygame.sprite.collide_mask(player, cave):
                      LOCATION=2
-                     file="L"+str(LEVEL)+"L"+str(LOCATION)
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, exit_sprites, cabin, housewall_sprites = load_maze(file)
                      
                      
@@ -265,10 +265,9 @@ def main():
               if pygame.sprite.spritecollide(player, lava_sprites, False, pygame.sprite.collide_mask):
                   player.rect.bottomleft = 80, 975
               if diamond and pygame.sprite.collide_mask(player, diamond):
-                  if keys[pygame.K_e]:
-                     LOCATION=3
-                     file="L"+str(LEVEL)+"L"+str(LOCATION)
-                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, exit_sprites, cabin, housewall_sprites = load_maze(file)
+                  LOCATION=3
+                  file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                  all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, exit_sprites, cabin, housewall_sprites = load_maze(file)
       if LOCATION==3:
          background_color=(72,111,56)
          screen.fill(background_color)
@@ -286,7 +285,7 @@ def main():
                      
               if pygame.sprite.spritecollide(player, exit_sprites, False, pygame.sprite.collide_mask):
                   LOCATION=4
-                  file="L"+str(LEVEL)+"L"+str(LOCATION)
+                  file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                   all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, exit_sprites, cabin, housewall_sprites = load_maze(file)
       if LOCATION==4:
          background_color=(72,111,56)
@@ -295,11 +294,11 @@ def main():
               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
               if cabin and "CabinKey" in inventory and pygame.sprite.collide_mask(player, cabin):
                  LOCATION=5
-                 file="L"+str(LEVEL)+"L"+str(LOCATION)
+                 file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                  all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, exit_sprites, cabin, housewall_sprites = load_maze(file)
               if pygame.sprite.spritecollide(player, exit_sprites, False, pygame.sprite.collide_mask):
                  LOCATION=3
-                 file="L"+str(LEVEL)+"L"+str(LOCATION)
+                 file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                  all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, exit_sprites, cabin, housewall_sprites = load_maze(file)
                  x_value = player.rect.x
                  player.rect.bottomleft = x_value, 975
