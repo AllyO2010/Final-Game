@@ -28,20 +28,20 @@ class Player(pygame.sprite.Sprite):
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(topleft=(x, y))
         self.speed = 6
-    def update(self, walls, rocks, trees, cavewalls, bushes, housewalls):
+    def update(self, walls, rocks, trees, cavewalls, bushes, housewalls, hole, crates):
         old_x, old_y = self.rect.topleft
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.rect.x -= self.speed
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.speed
-        if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, trees, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, cavewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, bushes, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, housewalls, False, pygame.sprite.collide_mask):
+        if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, trees, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, cavewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, bushes, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, housewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, hole, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, crates, False, pygame.sprite.collide_mask):
             self.rect.x = old_x
         if keys[pygame.K_UP]:
             self.rect.y -= self.speed
         if keys[pygame.K_DOWN]:
             self.rect.y += self.speed
-        if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, trees, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, cavewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, bushes, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, housewalls, False, pygame.sprite.collide_mask):
+        if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, trees, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, cavewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, bushes, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, housewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, hole, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, crates, False, pygame.sprite.collide_mask):
             self.rect.y = old_y
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -144,6 +144,52 @@ class Cabin(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (350, 350))
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(x, y))
+class Key(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.image.load("key.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.mask=pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect(topleft=(x, y))
+class Hole(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.image.load("hole.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (250, 100))
+        self.mask=pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect(center=(x, y))
+class Crate(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.image.load("crate.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
+        self.mask=pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect(topleft=(x, y))
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.image.load("phoneR.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.speed = 10
+    def updateEnemy(self, walls, DIRECTION):     
+        old_x = self.rect.x
+        if DIRECTION=="+":  
+           self.rect.x += self.speed
+           self.image = pygame.image.load("phoneR.png").convert_alpha()
+           self.image = pygame.transform.scale(self.image, (100, 100))
+           if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask):
+                  self.rect.x = old_x
+                  DIRECTION= "-"
+        if DIRECTION=="-":  
+           self.rect.x -= self.speed
+           self.image = pygame.image.load("phoneL.png").convert_alpha()
+           self.image = pygame.transform.scale(self.image, (100, 100))
+           if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask):
+                  self.rect.x = old_x
+                  DIRECTION= "+"
+        
+        return DIRECTION   
 #read file and convert it onto the screen
 def load_maze(filename):
     all_sprites = pygame.sprite.Group()
@@ -152,13 +198,17 @@ def load_maze(filename):
     lava_sprites = pygame.sprite.Group()
     bush_sprites = pygame.sprite.Group()
     housewall_sprites = pygame.sprite.Group()
+    hole_sprites = pygame.sprite.Group()
+    crate_sprites = pygame.sprite.Group()
     gun=None
+    key=None
     knife=None
     chest=None
     cabin=None
     keybush=None
     diamond= None
     player = None
+    enemy=None
     tree_sprites= pygame.sprite.Group()
     cave=None
     rock_sprites=pygame.sprite.Group()
@@ -186,9 +236,16 @@ def load_maze(filename):
                 caveWall = CaveWall(x, y)
                 all_sprites.add(caveWall)
                 cavewall_sprites.add(caveWall)
+            elif char == '3':
+                crate = Crate(x, y)
+                all_sprites.add(crate)
+                crate_sprites.add(crate)
             elif char == 'C':
                 cave = Cave(x, y)
                 all_sprites.add(cave)
+            elif char == 'E':
+                enemy = Enemy(x, y)
+                all_sprites.add(enemy)
             elif char == 'D':
                 diamond = Diamond(x, y)
                 all_sprites.add(diamond)
@@ -213,18 +270,25 @@ def load_maze(filename):
             elif char == 'H':
                 chest = Chest(x, y)
                 all_sprites.add(chest)
+            elif char == 'h':
+                hole = Hole(x, y)
+                all_sprites.add(hole)
+                hole_sprites.add(hole)
             elif char == 'G':
                 gun = Gun(x, y)
                 all_sprites.add(gun)
             elif char == 'K':
                 knife = Knife(x, y)
                 all_sprites.add(knife)
+            elif char == 'k':
+                key = Key(x, y)
+                all_sprites.add(key)
             elif char == 'P':
                 player = Player(x, y)
                 all_sprites.add(player)
     
 
-    return all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush,  cabin, housewall_sprites, chest, gun, knife
+    return all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush,  cabin, housewall_sprites, chest, gun, knife, enemy, hole_sprites, crate_sprites, key
 #work the game and what happens 
 def main():
     LEVEL=1
@@ -233,10 +297,11 @@ def main():
     pygame.display.set_caption("Final Game--LEVEL 1")
     clock = pygame.time.Clock()
     font = pygame.font.SysFont(None, 50)
+    L1L6EnemyDirection="+"
     running=True
     leftcabinroom=False
     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, cabin, housewall_sprites,chest, gun, knife = load_maze(file)
+    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key = load_maze(file)
     collidedkeybush=False
     collidedCabinChest=False
     inventory=[]
@@ -251,27 +316,27 @@ def main():
             background_color=(72,111,56)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites)
                  if cave and pygame.sprite.collide_mask(player, cave):
                         LOCATION=2
                         file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                        all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites, chest, gun, knife = load_maze(file)                      
+                        all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites, chest, gun, knife, enemy, hole_sprites, crate_sprites, key = load_maze(file)                      
          if LOCATION==2:
             background_color=(103, 110, 112)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites,hole_sprites, crate_sprites)
                  if pygame.sprite.spritecollide(player, lava_sprites, False, pygame.sprite.collide_mask):
                      player.rect.bottomleft = 80, 975
                  if diamond and pygame.sprite.collide_mask(player, diamond):
                      LOCATION=3
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites ,chest, gun, knife = load_maze(file)
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites ,chest, gun, knife, enemy, hole_sprites, crate_sprites, key = load_maze(file)
          if LOCATION==3:
             background_color=(72,111,56)
             screen.fill(background_color)
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites)
                  if keybush and not collidedkeybush and pygame.sprite.collide_mask(player, keybush):
                        collidedkeybush=True
                        text = font.render("You Found a Key!", True, (0,0,0))
@@ -283,27 +348,27 @@ def main():
                  if player.rect.bottom > 1050:
                      LOCATION=4
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife = load_maze(file)
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key = load_maze(file)
          if LOCATION==4:
             background_color=(72,111,56)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites)
                  if cabin and "CabinKey" in inventory and pygame.sprite.collide_mask(player, cabin):
                     LOCATION=5
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife = load_maze(file)
+                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites,crate_sprites, key = load_maze(file)
                  if player.rect.top < 0:
                     LOCATION=3
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife = load_maze(file)
+                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites,crate_sprites, key = load_maze(file)
                    
    
          if LOCATION==5:
             background_color=(153, 146, 142)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites,hole_sprites, crate_sprites)
                  if not collidedCabinChest and pygame.sprite.collide_mask(player, chest):
                      collidedCabinChest=True
                      inventory.append("BasementKey")
@@ -314,17 +379,21 @@ def main():
                     LOCATION=6
                     leftcabinroom=True
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife = load_maze(file)
+                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key = load_maze(file)
          if LOCATION==6:
             background_color=(153, 146, 142)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites)
                  if player.rect.left < 0:
                     LOCATION=5
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife = load_maze(file)
+                    all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key = load_maze(file)
                     player.rect.topleft = (970, 500)
+                 if enemy and pygame.sprite.collide_mask(player, enemy):
+                    player.rect.topleft = (0,70)
+                 if enemy:
+                    L1L6EnemyDirection=enemy.updateEnemy(housewall_sprites, L1L6EnemyDirection) 
 
    
                  
