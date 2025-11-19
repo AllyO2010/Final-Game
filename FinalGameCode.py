@@ -10,9 +10,6 @@ HEIGHT = 15 * TILE_SIZE
 FPS = 60
 LEVEL=1
 
-
-
-
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -21,10 +18,6 @@ GREEN = (0,255,0)
 RED = (255,0,0)
 BLUE = (0,0,255)
 PURPLE = (170,0,128)
-
-
-
-
 
 #Create player and updating player postion
 class Player(pygame.sprite.Sprite):
@@ -35,28 +28,19 @@ class Player(pygame.sprite.Sprite):
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(topleft=(x, y))
         self.speed = 6
-
     def update(self, walls, rocks, trees, cavewalls, bushes, housewalls):
-        
         old_x, old_y = self.rect.topleft
         keys = pygame.key.get_pressed()
-        
-
         if keys[pygame.K_LEFT]:
             self.rect.x -= self.speed
-
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.speed
-
-        
         if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, trees, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, cavewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, bushes, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, housewalls, False, pygame.sprite.collide_mask):
             self.rect.x = old_x
-
         if keys[pygame.K_UP]:
             self.rect.y -= self.speed
         if keys[pygame.K_DOWN]:
             self.rect.y += self.speed
-
         if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, trees, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, cavewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, bushes, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, housewalls, False, pygame.sprite.collide_mask):
             self.rect.y = old_y
 class Wall(pygame.sprite.Sprite):
@@ -160,11 +144,6 @@ class Cabin(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (350, 350))
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(x, y))
-
-
-
-
-        
 #read file and convert it onto the screen
 def load_maze(filename):
     all_sprites = pygame.sprite.Group()
@@ -183,18 +162,14 @@ def load_maze(filename):
     tree_sprites= pygame.sprite.Group()
     cave=None
     rock_sprites=pygame.sprite.Group()
-
     maze_level = []
-
     with open(filename, "r") as file:
         for line in file:
             maze_level.append(line.strip())
-
     for row_index, row in enumerate(maze_level):
         for col_index, char in enumerate(row):
             x = col_index * TILE_SIZE
             y = row_index * TILE_SIZE
-
             if char == '1':
                 wall = Wall(x, y)
                 all_sprites.add(wall)
@@ -280,9 +255,7 @@ def main():
                  if cave and pygame.sprite.collide_mask(player, cave):
                         LOCATION=2
                         file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
-                        all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites, chest, gun, knife = load_maze(file)
-                        
-                        
+                        all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites, chest, gun, knife = load_maze(file)                      
          if LOCATION==2:
             background_color=(103, 110, 112)
             screen.fill(background_color) 
@@ -333,7 +306,11 @@ def main():
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites)
                  if not collidedCabinChest and pygame.sprite.collide_mask(player, chest):
                      collidedCabinChest=True
-                 if player.rect.right > 1050:
+                     inventory.append("BasementKey")
+                 if pygame.sprite.collide_mask(player, knife):
+                     inventory.append("Knife")
+                     knife.rect.topleft = (-100, -100)
+                 if player.rect.right > 1070:
                     LOCATION=6
                     leftcabinroom=True
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
@@ -356,12 +333,6 @@ def main():
 
                   
               
-
-                     
-                  
-
-           
-             
       
          all_sprites.draw(screen)
          pygame.display.flip()     
