@@ -24,9 +24,9 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.image.load("landa.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (60, 60))
+        self.image = pygame.transform.scale(self.image, (110, 110))
         self.mask=pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect(topleft=(x, y))
+        self.rect = self.image.get_rect(center=(x, y))
         self.speed = 6
     def update(self, walls, rocks, trees, cavewalls, bushes, housewalls, hole, crates):
         old_x, old_y = self.rect.topleft
@@ -303,7 +303,7 @@ def load_maze(filename):
 #work the game and what happens 
 def main():
     LEVEL=1
-    LOCATION=4
+    LOCATION=3
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Final Game--LEVEL 1")
     clock = pygame.time.Clock()
@@ -354,14 +354,16 @@ def main():
                        screen.blit(text, (400, 450))
                        inventory.append("CabinKey")
                        pygame.display.flip()  
-                       pygame.time.delay(3000)
+                       pygame.time.delay(2000)
                  if player.rect.bottom > 1050:
                      playerX=player.rect.x
                      LOCATION=4
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC = load_maze(file)
-                     player.rect.topleft = (playerX, 5 )
+                     player.rect.topleft = (playerX, 20 )
          if LOCATION==4:
+            NPC.image = pygame.image.load("BlueDuck.png").convert_alpha()
+            NPC.image = pygame.transform.scale(NPC.image, (100, 100))
             background_color=(72,111,56)
             screen.fill(background_color) 
             if not level_won:
@@ -375,7 +377,7 @@ def main():
                     LOCATION=3
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites,crate_sprites, key, NPC = load_maze(file)
-                    player.rect.topleft = (playerX, 990 )
+                    player.rect.topleft = (playerX, 940 )
    
          if LOCATION==5:
             background_color=(153, 146, 142)
