@@ -409,7 +409,7 @@ def load_maze(filename):
 #work the game and what happens 
 def main():
     LEVEL=1
-    LOCATION=1
+    LOCATION=6
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Final Game--LEVEL 1")
     clock = pygame.time.Clock()
@@ -443,19 +443,12 @@ def main():
     "Green Duck: I don't know how to get out",
     "Green Duck: We can both find a way to escape",
 ]
-    
-    
-    
-    
-    
-    
     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion = load_maze(file)
     collidedkeybush=False
     collidedCabinChest=False
     inventory=[]
     level_won=False
-    
     while running:
       for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -475,7 +468,6 @@ def main():
                  if dialog_active and keys[pygame.K_SPACE]:
                      dialog_index += 1
                      pygame.time.wait(200) 
-                     
                  if dialog_index >= len(RedDuckDialog_lines):
                      dialog_active = False
                      movement = True  
@@ -486,14 +478,11 @@ def main():
                         LOCATION=2
                         file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                         all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites, chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion = load_maze(file) 
-                      
-                        
          if LOCATION==2:
             background_color=(103, 110, 112)
             screen.fill(background_color) 
             if not level_won:
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
-              
                  if pygame.sprite.spritecollide(player, lava_sprites, False, pygame.sprite.collide_mask):
                      player.rect.bottomleft = 80, 975
                  if player.rect.right > 1070:
@@ -528,14 +517,12 @@ def main():
                 if collidedkeybush and pygame.time.get_ticks() - key_message_time < 2000:
                     text = font.render("You found a key!", True, (0,0,0))
                     screen.blit(text, (440, 500))
-                    
                 if player.rect.bottom > 1050:
                     playerX=player.rect.x
                     LOCATION=5
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion = load_maze(file)
                     player.rect.topleft = (playerX, 20)
-                     
          if LOCATION==5:
             NPC.image = pygame.image.load("BlueDuck.png").convert_alpha()
             NPC.image = pygame.transform.scale(NPC.image, (100, 100))
@@ -552,7 +539,6 @@ def main():
                  if dialog_active and keys[pygame.K_SPACE]:
                      dialog_index += 1
                      pygame.time.wait(200) 
-                     
                  if dialog_index >= len(BlueDuckDialog_lines):
                      dialog_active = False
                      movement = True  
@@ -581,7 +567,6 @@ def main():
                  if collidedCabinChest and pygame.time.get_ticks() - L1L8Key_message_time < 2000:
                       text = font.render("You found a Gun!", True, (0,0,0))
                       screen.blit(text, (440, 500))
-                     
                  if pygame.sprite.collide_mask(player, knife):
                      inventory.append("Knife")
                      knife.rect.topleft = (-100, -100)
@@ -614,7 +599,6 @@ def main():
                     LOCATION=8
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion = load_maze(file)
-                    
          if LOCATION==8:
             background_color=(82, 84, 82)
             screen.fill(background_color)
@@ -629,18 +613,11 @@ def main():
                  if player.rect.bottom > 505 and player.rect.right > 935 and "Knife" in inventory:
                     if keys[pygame.K_e]:
                         box.rect.topleft = (-100, -100)
-                 
                  if key is not None and pygame.sprite.collide_mask(player, key):
                     inventory.append("L1L8KEY")
                     key.rect.topleft = (-100, -100)
                  if "L1L8KEY" in inventory:
                      key.rect.topleft = (-100, -100)
-
-
-                        
-
-                     
-
                  if player.rect.bottom > 1070:
                     LOCATION=9
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
@@ -661,7 +638,6 @@ def main():
                  if dialog_active and keys[pygame.K_SPACE]:
                      dialog_index += 1
                      pygame.time.wait(200) 
-                     
                  if dialog_index >= len(GreenDuckDialog_lines):
                      dialog_active = False
                      movement = True  
@@ -686,24 +662,24 @@ def main():
                  if player.rect.bottom > 900 and player.rect.left < 100 and "Knife" in inventory:
                     if keys[pygame.K_e]:
                         box.rect.topleft = (-100, -100) 
-                
                  if pygame.sprite.spritecollide(player, door_sprites, False, pygame.sprite.collide_mask) and "L1L9KEY" in inventory and "L1L8KEY" in inventory:
-                     font = pygame.font.SysFont(None, 50)
-                     text = font.render("LEVEL 1 COMPLETE!", True, BLUE)
-                     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-                     screen.blit(text, text_rect)
-                     movement=False
-      
-
-   
-                
-      
+                     LEVEL=2
+                     LOCATION=1
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion = load_maze(file)
+         all_sprites.draw(screen)
+         pygame.display.flip()  
+         
+      if LEVEL==2: 
+         if LOCATION==1:
+            background_color=(82, 84, 82)
+            screen.fill(background_color)
+            if not level_won:
+               keys = pygame.key.get_pressed()
+               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+            
+            
          all_sprites.draw(screen)
          pygame.display.flip()     
       clock.tick(FPS)
-
-
-
-
-
 main()
