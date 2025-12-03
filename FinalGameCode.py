@@ -56,6 +56,10 @@ class Player(pygame.sprite.Sprite):
                self.rect.y = old_y
            if box and pygame.sprite.collide_mask(self, box):
                self.rect.y = old_y
+           if keys[pygame.K_1]:
+               print(1)
+           if keys[pygame.K_2]:
+               print(2)
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -706,6 +710,8 @@ def main():
             background_color=(72,111,56)
             screen.fill(background_color)
             if not level_won:
+               oldX=player.rect.x
+               oldY=player.rect.y
                keys = pygame.key.get_pressed()
                player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
                if pygame.sprite.collide_mask(player, NPC) and not dialog_active:
@@ -725,8 +731,18 @@ def main():
                if pygame.sprite.collide_mask(player, rope):
                    inventory.append("Rope")
                    rope.rect.topleft = (-100, -100)
+               if pygame.sprite.collide_mask(player, mountain) and not "Rope" in inventory:
+                  player.rect.topleft = (oldX, oldY)
                if pygame.sprite.collide_mask(player, mountain) and "Rope" in inventory:
-                  print(1)
+                  LOCATION=2
+                  file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                  all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope = load_maze(file)
+         if LOCATION==2:
+            background_color=(103, 110, 112)
+            screen.fill(background_color)
+            if not level_won:
+               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+  
          all_sprites.draw(screen)
          pygame.display.flip()     
       clock.tick(FPS)
