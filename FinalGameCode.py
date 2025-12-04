@@ -24,11 +24,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.image.load("landa.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (110, 110))
+        self.image = pygame.transform.scale(self.image, (75, 110))
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 6
-    def update(self, walls, rocks, trees, cavewalls, bushes, housewalls, hole, crates, basementwalls, move, couch, stand, stove, bed, box):
+    def update(self, walls, rocks, trees, cavewalls, bushes, housewalls, hole, crates, basementwalls, move, couch, stand, stove, bed, box, INVENTORY):
         old_x, old_y = self.rect.topleft
         keys = pygame.key.get_pressed()
         if move:
@@ -56,10 +56,12 @@ class Player(pygame.sprite.Sprite):
                self.rect.y = old_y
            if box and pygame.sprite.collide_mask(self, box):
                self.rect.y = old_y
-           if keys[pygame.K_1]:
-               print(1)
-           if keys[pygame.K_2]:
-               print(2)
+           if keys[pygame.K_1] and "Knife" in INVENTORY:
+               self.image = pygame.image.load("landaKnife.png").convert_alpha()
+               self.image = pygame.transform.scale(self.image, (75, 110))
+           if keys[pygame.K_2] and "Gun" in INVENTORY:
+               self.image = pygame.image.load("landaGun.png").convert_alpha()
+               self.image = pygame.transform.scale(self.image, (75, 110))
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -434,8 +436,8 @@ def load_maze(filename):
     return all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush,  cabin, housewall_sprites, chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope
 #work the game and what happens 
 def main():
-    LEVEL=2
-    LOCATION=1
+    LEVEL=1
+    LOCATION=6
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Final Game--LEVEL 1")
     clock = pygame.time.Clock()
@@ -492,7 +494,7 @@ def main():
             screen.fill(background_color) 
             if not level_won:
                  keys = pygame.key.get_pressed()
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if pygame.sprite.collide_mask(player, NPC) and not dialog_active:
                         if keys[pygame.K_e]:
                            dialog_active = True
@@ -515,7 +517,7 @@ def main():
             background_color=(103, 110, 112)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if pygame.sprite.spritecollide(player, lava_sprites, False, pygame.sprite.collide_mask):
                      player.rect.bottomleft = 80, 975
                  if player.rect.right > 1070:
@@ -526,7 +528,7 @@ def main():
             background_color=(103, 110, 112)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if diamond and pygame.sprite.collide_mask(player, diamond):
                      LOCATION=4
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
@@ -542,7 +544,7 @@ def main():
            background_color=(72,111,56)
            screen.fill(background_color)
            if not level_won:
-                player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                 if keybush and not collidedkeybush and pygame.sprite.collide_mask(player, keybush):
                       collidedkeybush=True
                       key_message_time=pygame.time.get_ticks() 
@@ -563,7 +565,7 @@ def main():
             screen.fill(background_color) 
             if not level_won:
                  keys = pygame.key.get_pressed()
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if pygame.sprite.collide_mask(player, NPC) and not dialog_active:
                         if keys[pygame.K_e]:
                            dialog_active = True
@@ -592,7 +594,7 @@ def main():
             background_color=(153, 146, 142)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if chest and not collidedCabinChest and pygame.sprite.collide_mask(player, chest):
                       collidedCabinChest=True
                       L1L8Key_message_time=pygame.time.get_ticks() 
@@ -613,7 +615,7 @@ def main():
             background_color=(153, 146, 142)
             screen.fill(background_color) 
             if not level_won:
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if "BasementKey" in inventory:
                      key.rect.topleft = (-100, -100)
                  if player.rect.left < 0:
@@ -637,13 +639,13 @@ def main():
             screen.fill(background_color)
             if not level_won:
                  keys = pygame.key.get_pressed()
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if pygame.sprite.spritecollide(player, door_sprites, False, pygame.sprite.collide_mask):
                     LOCATION=7
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope = load_maze(file)
                     player.rect.topleft = (690, 825)
-                 if player.rect.bottom > 505 and player.rect.right > 935 and "Knife" in inventory:
+                 if player.rect.bottom > 470 and player.rect.right > 930 and "Knife" in inventory:
                     if keys[pygame.K_e]:
                         box.rect.topleft = (-100, -100)
                  if key is not None and pygame.sprite.collide_mask(player, key):
@@ -662,7 +664,7 @@ def main():
             screen.fill(background_color)
             if not level_won:
                  keys = pygame.key.get_pressed()
-                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if pygame.sprite.collide_mask(player, NPC) and not dialog_active:
                         if keys[pygame.K_e]:
                            dialog_active = True
@@ -713,7 +715,7 @@ def main():
                oldX=player.rect.x
                oldY=player.rect.y
                keys = pygame.key.get_pressed()
-               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                if pygame.sprite.collide_mask(player, NPC) and not dialog_active:
                         if keys[pygame.K_e]:
                            dialog_active = True
@@ -741,7 +743,7 @@ def main():
             background_color=(103, 110, 112)
             screen.fill(background_color)
             if not level_won:
-               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box)
+               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
   
          all_sprites.draw(screen)
          pygame.display.flip()     
