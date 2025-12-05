@@ -214,7 +214,7 @@ class Lake(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.image.load("Lake.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.image = pygame.transform.scale(self.image, (400, 400))
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(topleft=(x, y))
 class Bed(pygame.sprite.Sprite):
@@ -452,8 +452,8 @@ def load_maze(filename):
     return all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush,  cabin, housewall_sprites, chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake
 #work the game and what happens 
 def main():
-    LEVEL=1
-    LOCATION=6
+    LEVEL=2
+    LOCATION=1
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Final Game--LEVEL 1")
     clock = pygame.time.Clock()
@@ -760,11 +760,27 @@ def main():
                   file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                   all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake = load_maze(file)
          if LOCATION==2:
+            enemy.image = pygame.image.load("chromebook.png").convert_alpha()
+            enemy.image = pygame.transform.scale(enemy.image, (300, 300))
             background_color=(103, 110, 112)
             screen.fill(background_color)
             if not level_won:
                player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
-  
+               if pygame.sprite.collide_mask(player, enemy):
+                  LOCATION=3
+                  file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                  all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake = load_maze(file)
+         if LOCATION==3:
+            background_color=(72,111,56)
+            screen.fill(background_color)
+            if not level_won:
+               player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
+               if pygame.sprite.collide_mask(player, lake):
+                  player.speed=3
+               if not pygame.sprite.collide_mask(player, lake):
+                  player.speed=6
+                  
+
          all_sprites.draw(screen)
          pygame.display.flip()     
       clock.tick(FPS)
