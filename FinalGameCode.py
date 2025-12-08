@@ -806,13 +806,13 @@ def main():
                   LOCATION=7
                   file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                   all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)
-               if pygame.sprite.collide_mask(player, KeyPiece):
+               if KeyPiece and  pygame.sprite.collide_mask(player, KeyPiece):
                   keypieces+=1
                   KeyPiece.rect.topleft = (-100, -100) 
                   L3Piece=True
-               if pygame.sprite.collide_mask(player, lake):
+               if lake and pygame.sprite.collide_mask(player, lake):
                   player.speed=3
-               if not pygame.sprite.collide_mask(player, lake):
+               if lake and not pygame.sprite.collide_mask(player, lake):
                   player.speed=6
                if player.rect.bottom > 1050:
                     LOCATION=5
@@ -904,9 +904,13 @@ def main():
                     player.rect.topleft = (playerX, 900)
                     if L4Piece:
                         KeyPiece.rect.topleft = (-100, -100) 
-
-
-
+         if LOCATION==7:
+            background_color=(153, 146, 142)
+            screen.fill(background_color) 
+            if not level_won:
+                 playerX=player.rect.x
+                 playerY=player.rect.y
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
          all_sprites.draw(screen)
          pygame.display.flip()     
       clock.tick(FPS)
