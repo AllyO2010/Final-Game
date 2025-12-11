@@ -515,7 +515,7 @@ def main():
     "Purple Duck: I'll give you this key fragment",
 ]
     PurpleDuckDialog_lines2 = [
-    "Purple Duck: You found my bag! Thanks getting it",
+    "Purple Duck: You found my bag! Thank you",
     "Purple Duck: Here's the key fragment",
     "Landa: Thank you"
 ]
@@ -833,8 +833,10 @@ def main():
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)                    
                     player.rect.topleft = (playerX, 50)
-                    if "Backpack" in inventory:
+                    if "Bag" in inventory:
                         knife.rect.topleft = (-100, -100) 
+                    if "L5Piece" in inventory:
+                        KeyPiece.rect.topleft = (-100, -100) 
                if player.rect.right > 1070:
                     LOCATION=4
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
@@ -875,8 +877,11 @@ def main():
                  playerY=player.rect.y 
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if pygame.sprite.collide_mask(player, knife):
-                    inventory.append("Backpack")
+                    inventory.append("Bag")
                     knife.rect.topleft = (-100, -100) 
+                 if pygame.sprite.collide_mask(player, KeyPiece):
+                    inventory.append("L5Piece")
+                    KeyPiece.rect.topleft = (-100, -100)
                  if player.rect.right > 1050:
                     LOCATION=6
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
@@ -900,41 +905,44 @@ def main():
                  playerX=player.rect.x
                  playerY=player.rect.y
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
-                 if not "L6Piece" in inventory:
+                 if "L6Piece" not in inventory:
                     if pygame.sprite.collide_mask(player, NPC) and not dialog_active:
                            if keys[pygame.K_e]:
                               dialog_active = True
                               movement = False
                               dialog_index = 0 
-                              
-                    if "Backpack" not in inventory:   
-                       if dialog_active and keys[pygame.K_SPACE]:
-                           dialog_index += 1
-                           pygame.time.wait(200) 
-                       if dialog_index >= len(PurpleDuckDialog_lines):
-                           dialog_active = False
-                           movement = True  
-                       if dialog_active and dialog_index < len(PurpleDuckDialog_lines):
-                           text = font.render(PurpleDuckDialog_lines[dialog_index], True, (0,0,0))
-                           screen.blit(text, (80, 900)) 
-                    if "Backpack" in inventory and "L6Piece" not in inventory:        
-                       if dialog_active and keys[pygame.K_SPACE]:
-                           dialog_index += 1
-                           pygame.time.wait(200) 
-                       if dialog_index >= len(PurpleDuckDialog_lines2):
-                           dialog_active = False
-                           movement = True  
-                       if dialog_active and dialog_index < len(PurpleDuckDialog_lines2):
-                           text = font.render(PurpleDuckDialog_lines2[dialog_index], True, (0,0,0))
-                           screen.blit(text, (80, 900))
-                       inventory.append("L6Piece")
+                                 
+                    if "Bag" not in inventory:   
+                           if dialog_active and keys[pygame.K_SPACE]:
+                              dialog_index += 1
+                              pygame.time.wait(200) 
+                           if dialog_index >= len(PurpleDuckDialog_lines):
+                              dialog_active = False
+                              movement = True  
+                           if dialog_active and dialog_index < len(PurpleDuckDialog_lines):
+                              text = font.render(PurpleDuckDialog_lines[dialog_index], True, (0,0,0))
+                              screen.blit(text, (80, 900)) 
+                    if "Bag" in inventory:   
+                           if dialog_active and keys[pygame.K_SPACE]:
+                              dialog_index += 1
+                              pygame.time.wait(200) 
+                           if dialog_index >= len(PurpleDuckDialog_lines2):
+                              dialog_active = False
+                              movement = True 
+                              inventory.append("L6Piece") 
+                           if dialog_active and dialog_index < len(PurpleDuckDialog_lines2):
+                              text = font.render(PurpleDuckDialog_lines2[dialog_index], True, (0,0,0))
+                              screen.blit(text, (80, 900)) 
+                          
                  if player.rect.left < 0:
                     LOCATION=5
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)                    
                     player.rect.topleft = (900, playerY)
-                    if "Backpack" in inventory:
+                    if "Bag" in inventory:
                         knife.rect.topleft = (-100, -100) 
+                    if "L5Piece" in inventory:
+                        KeyPiece.rect.topleft = (-100, -100) 
                  if player.rect.top < 0:
                     LOCATION=4
                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
