@@ -466,8 +466,8 @@ def load_maze(filename):
 
 def main():
     #LEVELS/LOCATIONS
-    LEVEL=2
-    LOCATION=3
+    LEVEL=1
+    LOCATION=1
     #Screen
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Lives: 5")
@@ -761,7 +761,17 @@ def main():
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)
          all_sprites.draw(screen)
          pygame.display.flip()  
-         
+         if Lives<=0:
+            collidedkeybush=False
+            collidedCabinChest=False
+            inventory=[]
+            level_won=False
+            Lives=5
+            LEVEL=1
+            LOCATION=1
+            file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+            all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites,\
+            key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)
       if LEVEL==2: 
          if LOCATION==1:
             NPC.image = pygame.image.load("GreenDuck.png").convert_alpha()
@@ -922,7 +932,8 @@ def main():
                            if dialog_active and dialog_index < len(PurpleDuckDialog_lines):
                               text = font.render(PurpleDuckDialog_lines[dialog_index], True, (0,0,0))
                               screen.blit(text, (80, 900)) 
-                    if "Bag" in inventory:   
+
+                    if "Bag" in inventory and dialog_active:   
                            if dialog_active and keys[pygame.K_SPACE]:
                               dialog_index += 1
                               pygame.time.wait(200) 
@@ -958,6 +969,18 @@ def main():
                  playerY=player.rect.y
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
          all_sprites.draw(screen)
-         pygame.display.flip()     
+         pygame.display.flip()   
+         if Lives<=0:
+            collidedkeybush=False
+            collidedCabinChest=False
+            inventory=[]
+            level_won=False
+            Lives=5
+            LEVEL=1
+            LOCATION=1
+            file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+            all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites,\
+            key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)
+  
       clock.tick(FPS)
 main()
