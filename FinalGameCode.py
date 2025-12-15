@@ -1,4 +1,4 @@
-
+import random
 import pygame
 import sys
 # Initialize Pygame
@@ -68,7 +68,11 @@ class Player(pygame.sprite.Sprite):
                self.image = pygame.transform.scale(self.image, (75, 110))
                if "ShrinkPotion" in INVENTORY:
                   self.image = pygame.transform.scale(self.image, (60, 60))
-    
+    def shoot(self, target_pos):
+        bullet = Projectile(self.rect.centerx, self.rect.centery, target_pos)
+        all_sprites.add(bullet)
+        bullets.add(bullet)
+
          
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -283,6 +287,24 @@ class keypiece(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (20, 20))
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(topright=(x, y))
+class Projectile(pygame.sprite.Sprite):
+    def __init__(self, x, y, target_pos):
+        super().__init__()
+        self.image = pygame.Surface((8, 8))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect(center=(x, y))
+        # Calculate velocity towards target
+        dx, dy = target_pos[0] - x, target_pos[1] - y
+        dist = max(1, (dx**2 + dy**2) ** 0.5)
+        self.vx, self.vy = dx / dist * 8, dy / dist * 8
+
+    def update(self):
+        self.rect.x += self.vx
+        self.rect.y += self.vy
+        # Remove if off screen
+        if not screen.get_rect().colliderect(self.rect):
+            self.kill()
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -305,9 +327,14 @@ class Enemy(pygame.sprite.Sprite):
            self.image = pygame.transform.scale(self.image, (100, 100))
            if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask):
                   self.rect.x = old_x
-                  DIRECTION= "+"
-        
-        return DIRECTION   
+                  DIRECTION= "+"      
+        return DIRECTION  
+    def updateEn(self, rocks):
+      if random.randint(0, 15) == 0:
+         self.rect.x += random.choice([-TILESIZE, TILESIZE, 0])
+         self.rect.y += random.choice([-TILESIZE, TILESIZE, 0])
+
+      
 #read file and convert it onto the screen
 def load_maze(filename):
     all_sprites = pygame.sprite.Group()
@@ -529,11 +556,16 @@ def main():
     collidedCabinChest=False
     inventory=[]
     level_won=False
-    Lives=5
+    Lives=4
     while running:
       for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                player.shoot(pygame.mouse.get_pos())
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                player.shoot(pygame.mouse.get_pos())
+
       if LEVEL==1:
          if LOCATION==1:
             background_color=(72,111,56)
@@ -967,6 +999,8 @@ def main():
          if LOCATION==7:
             background_color=(153, 146, 142)
             screen.fill(background_color) 
+            lake.image = pygame.image.load("Rug2.png").convert_alpha()
+            lake.image = pygame.transform.scale(lake.image, (350, 350))
             if not level_won:
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                  if player.rect.left < 0: 
@@ -977,11 +1011,14 @@ def main():
                      LOCATION=8
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)                    
-
+                     if "HPotion" in inventory:
+                       potion.rect.topleft = (-100, -100)  
                   
          if LOCATION==8:
             background_color=(153, 146, 142)
             screen.fill(background_color) 
+            potion.image = pygame.image.load("HealthPotion.png").convert_alpha()
+            potion.image = pygame.transform.scale(potion.image, (45, 45))
             if not level_won:
                player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory)
                if player.rect.left < 0: 
@@ -989,7 +1026,10 @@ def main():
                   file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                   all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)                    
                   player.rect.topleft = (960, 500)
- 
+               if potion and pygame.sprite.collide_mask(player, potion) and Lives<5:
+                  potion.rect.topleft = (-100, -100) 
+                  Lives+=1
+                  inventory.append("HPotion")
          if LOCATION==9:
             background_color=(153, 146, 142)
             screen.fill(background_color) 
