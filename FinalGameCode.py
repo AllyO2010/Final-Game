@@ -824,10 +824,9 @@ def main():
                      inventory.remove("ShrinkPotion")
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece = load_maze(file)
-         sprites = all_sprites.copy()
-         sprites.remove(player)
+         solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites)
          for bullet in bullets:
-            if pygame.sprite.spritecollide(player, sprites, False):
+            if pygame.sprite.spritecollide(bullet, solid_sprites, False):
                bullet.kill()
             if enemy and pygame.sprite.collide_mask(bullet, enemy):
                Phone_Lives-=1
