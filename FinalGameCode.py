@@ -1,3 +1,4 @@
+
 import random
 import pygame
 import sys
@@ -90,6 +91,15 @@ class Player(pygame.sprite.Sprite):
         bullets.add(bullet)
     def shootScissors(self, target_pos):
         scissor = Scissor(self.rect.centerx, self.rect.centery, target_pos)
+        scissorX=scissor.rect.x
+        scissorY=scissor.rect.y
+        targetX= target_pos[0]
+        if targetX < scissorX:   
+            scissor.image = pygame.image.load("ScissorsL.png").convert_alpha()
+            scissor.image = pygame.transform.scale(scissor.image, (40, 40))
+        if targetX > scissorX:   
+            scissor.image = pygame.image.load("ScissorsR.png").convert_alpha()
+            scissor.image = pygame.transform.scale(scissor.image, (40, 40))
         all_sprites.add(scissors)
         scissors.add(scissor)
 
@@ -340,8 +350,8 @@ class Bullet(pygame.sprite.Sprite):
 class Scissor(pygame.sprite.Sprite):
     def __init__(self, x, y, target_pos):
         super().__init__()
-        self.image = pygame.Surface((8, 8))
-        self.image.fill(YELLOW)
+        self.image = pygame.image.load("ScissorsR.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (40, 40))
         self.rect = self.image.get_rect(center=(x, y))
         # Calculate velocity towards target
         dx, dy = target_pos[0] - x, target_pos[1] - y
@@ -1275,7 +1285,7 @@ def main():
             screen.fill((72,111,56), rect=(70, 700, 990, 370))
             enemy.image = pygame.image.load("Paper.png").convert_alpha()
             enemy.image = pygame.transform.scale(enemy.image, (350, 350))
-            knife.image = pygame.image.load("Scissors.png").convert_alpha()
+            knife.image = pygame.image.load("ScissorsL.png").convert_alpha()
             knife.image = pygame.transform.scale(knife.image, (80, 80))
             if not level_won:
                  playerX=player.rect.x
@@ -1310,6 +1320,8 @@ def main():
     
             for bullet in bullets:
                if pygame.sprite.spritecollide(bullet, solid_sprites, False):
+                  bullet.kill()
+               if enemy and pygame.sprite.collide_mask(bullet, enemy):
                   bullet.kill()
             for scissor in scissors:
                if pygame.sprite.spritecollide(scissor, solid_sprites, False):
