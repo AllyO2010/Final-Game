@@ -300,7 +300,7 @@ class Rug(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.image.load("Rug2.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (250, 250))
+        self.image = pygame.transform.scale(self.image, (400, 400))
         self.rect = self.image.get_rect(topleft=(x, y))
 class Table(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -567,7 +567,7 @@ def load_maze(filename):
 def main():
     #LEVELS/LOCATIONS
     LEVEL=3
-    LOCATION=3
+    LOCATION=6
     #Screen
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
@@ -1306,6 +1306,71 @@ def main():
                      LOCATION=4
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
+         if LOCATION==4:
+            background_color=(72,111,56)
+            screen.fill(background_color) 
+            if not level_won:
+                 playerX=player.rect.x
+                 playerY=player.rect.y
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory, table_sprites)
+                 if player.rect.top < 0:
+                     bullets.empty()
+                     all_sprites.empty()
+                     LOCATION=5
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
+                     player.rect.topleft = (playerX, 900)
+                 if player.rect.right > 1050:
+                     bullets.empty()
+                     all_sprites.empty()
+                     LOCATION=6
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
+                     player.rect.topleft = (25, playerY)
+                 if player.rect.left < 0:
+                     bullets.empty()
+                     all_sprites.empty()
+                     LOCATION=3
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
+                     player.rect.topleft = (910, 790)
+                     key.rect.topleft = (-100, -100)
+                     knife.rect.topleft = (-100, -100)
+                     enemy.kill()
+         if LOCATION==5:
+            background_color=(72,111,56)
+            screen.fill(background_color) 
+            if not level_won:
+                 playerX=player.rect.x
+                 playerY=player.rect.y
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory, table_sprites)
+                 if player.rect.bottom > 1050:
+                     bullets.empty()
+                     all_sprites.empty()
+                     LOCATION=4
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
+                     player.rect.topleft = (playerX, 25)
+         if LOCATION==6:
+            background_color=(72,111,56)
+            screen.fill(background_color) 
+            cabin.image = pygame.image.load("Jail.png").convert_alpha()
+            cabin.image = pygame.transform.scale(cabin.image, (400, 400))
+            cabin.mask=pygame.mask.from_surface(cabin.image)
+            if not level_won:
+                 playerX=player.rect.x
+                 playerY=player.rect.y
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory, table_sprites)
+                 if player.rect.left < 0:
+                     bullets.empty()
+                     all_sprites.empty()
+                     LOCATION=4
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
+                     player.rect.topleft = (960, playerY)
+                 if pygame.sprite.collide_mask(player, cabin):
+                     player.rect.topleft = (playerX, playerY)
+
 
 
                      
