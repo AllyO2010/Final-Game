@@ -1,5 +1,3 @@
-
-
 import random
 import pygame
 import sys
@@ -634,7 +632,7 @@ def main():
     Phone_Lives=10
     Chromebook_Lives=30
     Paper_Lives=30
-    solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites, rock_sprites, table_sprites, door_sprites)
+    solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites, rock_sprites, table_sprites, door_sprites, bush_sprites, tree_sprites)
 
     while running:
       for event in pygame.event.get():
@@ -1228,7 +1226,6 @@ def main():
          if enemy and Chromebook_Lives<=0:
             enemy.kill()
             enemy.rect.topleft = (-1000, -1000) 
-            
          bullets.update()
          all_sprites.draw(screen)
          
@@ -1303,6 +1300,10 @@ def main():
                      player.rect.topleft = (playerX, playerY) 
                  if enemy.alive() and "OfficeKey" in inventory:
                      enemy.UPDATEenemy(solid_sprites)
+                 if enemy.alive() and pygame.sprite.collide_mask(player, enemy):
+                     player.rect.topleft = (100,100)
+                     Lives-=1
+                     pygame.display.set_caption("Lives: "+str(Lives))
                  if player.rect.right > 1050:
                      bullets.empty()
                      all_sprites.empty()
@@ -1390,22 +1391,21 @@ def main():
                  
                  
     
-            for bullet in bullets:
-               if pygame.sprite.spritecollide(bullet, solid_sprites, False):
-                  bullet.kill()
-               if enemy and pygame.sprite.collide_mask(bullet, enemy):
-                  bullet.kill()
-            for scissor in scissors:
-               if pygame.sprite.spritecollide(scissor, solid_sprites, False):
-                  scissor.kill()
-               if enemy and pygame.sprite.collide_mask(scissor, enemy):
-                  Paper_Lives-=1
-                  scissor.kill()
+         for bullet in bullets:
+            if pygame.sprite.spritecollide(bullet, solid_sprites, False):
+               bullet.kill()
+            if enemy and pygame.sprite.collide_mask(bullet, enemy):
+               bullet.kill()
+         if enemy and Paper_Lives<=0:
+            enemy.kill()
+            enemy.rect.topleft = (-1000, -1000) 
+         for scissor in scissors:
+            if pygame.sprite.spritecollide(scissor, solid_sprites, False):
+               scissor.kill()
+            if enemy and pygame.sprite.collide_mask(scissor, enemy):
+               scissor.kill()
 
-            if enemy and Paper_Lives<=0:
-               enemy.rect.topleft = (-1000, -1000)
-               enemy.kill() 
-               
+                     
          scissors.update()
          bullets.update()
          all_sprites.draw(screen)
