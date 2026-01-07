@@ -1,4 +1,5 @@
 
+
 import random
 import pygame
 import sys
@@ -390,12 +391,12 @@ class Enemy(pygame.sprite.Sprite):
                   self.rect.x = old_x
                   DIRECTION= "+"      
         return DIRECTION  
-    def UPDATEenemy(self, rocks, walls):
+    def UPDATEenemy(self, solid_sprites):
       old_x, old_y = self.rect.topleft
       if random.randint(0, 7) == 0:
          self.rect.x += random.choice([-TILE_SIZE, TILE_SIZE, 0])
          self.rect.y += random.choice([-TILE_SIZE, TILE_SIZE, 0])
-      if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask):
+      if pygame.sprite.spritecollide(self, solid_sprites, False, pygame.sprite.collide_mask):
          self.rect.x = old_x
          self.rect.y = old_y
 
@@ -567,7 +568,7 @@ def load_maze(filename):
 def main():
     #LEVELS/LOCATIONS
     LEVEL=3
-    LOCATION=6
+    LOCATION=3
     #Screen
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
@@ -985,7 +986,7 @@ def main():
                     Lives-=1
                     pygame.display.set_caption("Lives: "+str(Lives))
                if enemy:
-                    enemy.UPDATEenemy(rock_sprites, cavewall_sprites)
+                    enemy.UPDATEenemy(solid_sprites)
    
                if not enemy.alive():
                   diamond.rect.topleft = (enemyX,enemyY)
@@ -1300,6 +1301,8 @@ def main():
                      knife.rect.topleft = (-100, -100)
                  if pygame.sprite.spritecollide(player, door_sprites, False) and enemy.alive():
                      player.rect.topleft = (playerX, playerY) 
+                 if enemy.alive() and "OfficeKey" in inventory:
+                     enemy.UPDATEenemy(solid_sprites)
                  if player.rect.right > 1050:
                      bullets.empty()
                      all_sprites.empty()
@@ -1340,6 +1343,9 @@ def main():
          if LOCATION==5:
             background_color=(72,111,56)
             screen.fill(background_color) 
+            enemy.image = pygame.image.load("Chromebook.png").convert_alpha()
+            enemy.image = pygame.transform.scale(enemy.image, (400, 400))
+            enemy.mask=pygame.mask.from_surface(enemy.image)
             if not level_won:
                  playerX=player.rect.x
                  playerY=player.rect.y
@@ -1354,6 +1360,7 @@ def main():
          if LOCATION==6:
             background_color=(72,111,56)
             screen.fill(background_color) 
+            screen.fill((BLACK), rect=(630, 120, 50, 27))
             cabin.image = pygame.image.load("Jail.png").convert_alpha()
             cabin.image = pygame.transform.scale(cabin.image, (400, 400))
             cabin.mask=pygame.mask.from_surface(cabin.image)
@@ -1368,7 +1375,7 @@ def main():
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
                      player.rect.topleft = (960, playerY)
-                 if pygame.sprite.collide_mask(player, cabin):
+                 if cabin and pygame.sprite.collide_mask(player, cabin):
                      player.rect.topleft = (playerX, playerY)
 
 
