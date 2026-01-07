@@ -26,11 +26,12 @@ PURPLE = (170,0,128)
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.image.load("landa.png").convert_alpha()
+        self.image = pygame.image.load("landaR.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (75, 110))
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(x, y))
         self.currentweapon="Nothing"
+        self.direction="R"
         self.speed = 5
     def update(self, walls, rocks, trees, cavewalls, bushes, housewalls, hole, crates, basementwalls, move, couch, stand, stove, bed, box, INVENTORY, tables):
         old_x, old_y = self.rect.topleft
@@ -38,8 +39,10 @@ class Player(pygame.sprite.Sprite):
         if move:
            if keys[pygame.K_LEFT]:
                self.rect.x -= self.speed
+               self.direction="L"
            if keys[pygame.K_RIGHT]:
                self.rect.x += self.speed
+               self.direction="R"
            if pygame.sprite.spritecollide(self, walls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, rocks, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, trees, False, pygame.sprite.collide_mask)\
               or pygame.sprite.spritecollide(self, cavewalls, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, bushes, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, housewalls, False, pygame.sprite.collide_mask)\
               or pygame.sprite.spritecollide(self, hole, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, crates, False, pygame.sprite.collide_mask) or pygame.sprite.spritecollide(self, basementwalls, False, pygame.sprite.collide_mask)\
@@ -66,24 +69,42 @@ class Player(pygame.sprite.Sprite):
            if box and pygame.sprite.collide_mask(self, box):
                self.rect.y = old_y
            if keys[pygame.K_1] and "Knife" in INVENTORY:
-               self.image = pygame.image.load("landaKnife.png").convert_alpha()
-               self.image = pygame.transform.scale(self.image, (75, 110))
                self.currentweapon="Knife"
-               if "ShrinkPotion" in INVENTORY:
-                  self.image = pygame.image.load("landaKnife.png").convert_alpha()
-                  self.image = pygame.transform.scale(self.image, (60, 60))
-               
            if keys[pygame.K_2] and "Gun" in INVENTORY:
-               self.image = pygame.image.load("landaGun.png").convert_alpha()
-               self.image = pygame.transform.scale(self.image, (75, 110))
                self.currentweapon="Gun"
-               if "ShrinkPotion" in INVENTORY:
-                  self.image = pygame.image.load("landaGun.png").convert_alpha()
-                  self.image = pygame.transform.scale(self.image, (60, 60))
            if keys[pygame.K_3] and "Scissors" in INVENTORY:
-               self.image = pygame.image.load("landaScissors.png").convert_alpha()
-               self.image = pygame.transform.scale(self.image, (75, 110))
                self.currentweapon="Scissors"
+           if self.direction=="R":
+               if self.currentweapon=="Nothing":
+                  self.image = pygame.image.load("landaR.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if self.currentweapon=="Knife":
+                  self.image = pygame.image.load("landaKnifeR.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if self.currentweapon=="Gun":
+                  self.image = pygame.image.load("landaGunR.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if self.currentweapon=="Scissors":
+                  self.image = pygame.image.load("landaScissorsR.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if "ShrinkPotion" in INVENTORY:
+                  self.image = pygame.transform.scale(self.image, (60, 60))
+           if self.direction=="L":
+               if self.currentweapon=="Nothing":
+                  self.image = pygame.image.load("landaL.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if self.currentweapon=="Knife":
+                  self.image = pygame.image.load("landaKnifeL.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if self.currentweapon=="Gun":
+                  self.image = pygame.image.load("landaGunL.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if self.currentweapon=="Scissors":
+                  self.image = pygame.image.load("landaScissorsL.png").convert_alpha()
+                  self.image = pygame.transform.scale(self.image, (75, 110))
+               if "ShrinkPotion" in INVENTORY:
+                  self.image = pygame.transform.scale(self.image, (60, 60))
+                  
     def shoot(self, target_pos):
         bullet = Bullet(self.rect.centerx, self.rect.centery, target_pos)
         all_sprites.add(bullet)
@@ -391,7 +412,7 @@ class Enemy(pygame.sprite.Sprite):
         return DIRECTION  
     def UPDATEenemy(self, solid_sprites):
       old_x, old_y = self.rect.topleft
-      if random.randint(0, 7) == 0:
+      if random.randint(0, 3) == 0:
          self.rect.x += random.choice([-TILE_SIZE, TILE_SIZE, 0])
          self.rect.y += random.choice([-TILE_SIZE, TILE_SIZE, 0])
       if pygame.sprite.spritecollide(self, solid_sprites, False, pygame.sprite.collide_mask):
@@ -625,7 +646,7 @@ def main():
     movement=True
     collidedkeybush=False
     collidedCabinChest=False
-    inventory=["Gun"]
+    inventory=["Gun", "Knife"]
     level_won=False
     Lives=4
     pygame.display.set_caption("Lives: "+str(Lives))
@@ -1284,7 +1305,7 @@ def main():
             enemy.image = pygame.image.load("Paper.png").convert_alpha()
             enemy.image = pygame.transform.scale(enemy.image, (350, 350))
             knife.image = pygame.image.load("ScissorsL.png").convert_alpha()
-            knife.image = pygame.transform.scale(knife.image, (80, 80))
+            knife.image = pygame.transform.scale(knife.image, (50, 50))
             if not level_won:
                  playerX=player.rect.x
                  playerY=player.rect.y
@@ -1404,6 +1425,7 @@ def main():
                scissor.kill()
             if enemy and pygame.sprite.collide_mask(scissor, enemy):
                scissor.kill()
+               Paper_Lives-=1
 
                      
          scissors.update()
