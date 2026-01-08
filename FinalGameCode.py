@@ -206,7 +206,7 @@ class KeyBush(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.image.load("bush.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (300, 300))
+        self.image = pygame.transform.scale(self.image, (100, 100))
         self.mask=pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(x, y))
 class Cabin(pygame.sprite.Sprite):
@@ -571,7 +571,7 @@ def load_maze(filename):
 def main():
     #LEVELS/LOCATIONS
     LEVEL=1
-    LOCATION=1
+    LOCATION=7
     #Screen
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
@@ -811,7 +811,6 @@ def main():
             if not level_won:
                  solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites, rock_sprites, table_sprites, bush_sprites, tree_sprites)
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory, table_sprites)
-                 print(inventory)
                  if "BasementKey" in inventory:
                      key.rect.topleft = (-100, -100)
                  if player.rect.left < 0:
@@ -1375,12 +1374,14 @@ def main():
                      key.rect.topleft = (-100, -100)
                      knife.rect.topleft = (-100, -100)
                      enemy_alive=False
+                     enemy.rect.topleft = (500, 500)
          if LOCATION==5:
             background_color=(72,111,56)
             screen.fill(background_color) 
             enemy.image = pygame.image.load("Chromebook.png").convert_alpha()
             enemy.image = pygame.transform.scale(enemy.image, (400, 400))
             enemy.mask=pygame.mask.from_surface(enemy.image)
+             
             if not level_won:
                  solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites, rock_sprites, table_sprites, bush_sprites, tree_sprites)
                  playerX=player.rect.x
