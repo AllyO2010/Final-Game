@@ -1,3 +1,4 @@
+
 import random
 import pygame
 import sys
@@ -399,7 +400,7 @@ class Enemy(pygame.sprite.Sprite):
       if random.randint(0, 3) == 0:
          self.rect.x += random.choice([-TILE_SIZE, TILE_SIZE, 0])
          self.rect.y += random.choice([-TILE_SIZE, TILE_SIZE, 0])
-      if pygame.sprite.spritecollide(self, solid_sprites, False, pygame.sprite.collide_mask):
+      if pygame.sprite.spritecollide(self, solid_sprites, False, pygame.sprite.collide_mask) or self.rect.bottom<0:
          self.rect.x = old_x
          self.rect.y = old_y
 
@@ -570,7 +571,7 @@ def load_maze(filename):
 
 def main():
     #LEVELS/LOCATIONS
-    LEVEL=1
+    LEVEL=3
     LOCATION=7
     #Screen
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -630,13 +631,15 @@ def main():
     movement=True
     collidedkeybush=False
     collidedCabinChest=False
-    inventory=["Gun"]
+    inventory=["Gun", "Scissors"]
     level_won=False
     Lives=4
     pygame.display.set_caption("Lives: "+str(Lives))
     Phone_Lives=10
     Chromebook_Lives=30
+    Chromebook2_Lives=1
     Paper_Lives=30
+    enteredJail=False
     enemy_alive=False
     solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites, rock_sprites, table_sprites, door_sprites, bush_sprites, tree_sprites)
 
@@ -935,6 +938,13 @@ def main():
          bullets.draw(screen)
          pygame.display.flip()  
          if Lives<=0:
+            L1L6EnemyDirection="+"
+            Phone_Lives=10
+            Chromebook_Lives=30
+            Chromebook2_Lives=1
+            Paper_Lives=30
+            enteredJail=False
+            enemy_alive=False
             collidedkeybush=False
             collidedCabinChest=False
             inventory=[]
@@ -1257,6 +1267,13 @@ def main():
          bullets.draw(screen)
          pygame.display.flip()  
          if Lives<=0:
+            L1L6EnemyDirection="+"
+            Phone_Lives=10
+            Chromebook_Lives=30
+            Chromebook2_Lives=1
+            Paper_Lives=30
+            enteredJail=False
+            enemy_alive=False
             collidedkeybush=False
             collidedCabinChest=False
             inventory=[]
@@ -1270,7 +1287,6 @@ def main():
             file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
             all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites,\
             key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)
-            
       if LEVEL==3:
          if LOCATION==1:
             background_color=(153, 146, 142)
@@ -1356,7 +1372,13 @@ def main():
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
                      player.rect.topleft = (playerX, 900)
-                     enemy_alive=True
+                     if Chromebook2_Lives>0:
+                        enemy_alive = True
+                     if Chromebook2_Lives<=0:
+                        enemy.rect.topleft = (-1000, -1000)
+                        key.rect.topleft = (500, 500)
+                     if "JailKey" in inventory:
+                        key.rect.topleft = (-1000, -1000)
                  if player.rect.right > 1050:
                      bullets.empty()
                      all_sprites.empty()
@@ -1373,20 +1395,29 @@ def main():
                      player.rect.topleft = (910, 790)
                      key.rect.topleft = (-100, -100)
                      knife.rect.topleft = (-100, -100)
-                     enemy_alive=False
-                     enemy.rect.topleft = (500, 500)
          if LOCATION==5:
             background_color=(72,111,56)
             screen.fill(background_color) 
-            enemy.image = pygame.image.load("Chromebook.png").convert_alpha()
-            enemy.image = pygame.transform.scale(enemy.image, (400, 400))
+            enemy.image = pygame.image.load("chromebook.png").convert_alpha()
+            enemy.image = pygame.transform.scale(enemy.image, (300, 300))
             enemy.mask=pygame.mask.from_surface(enemy.image)
-             
             if not level_won:
+                 player.speed=7
                  solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites, rock_sprites, table_sprites, bush_sprites, tree_sprites)
                  playerX=player.rect.x
                  playerY=player.rect.y
                  player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory, table_sprites)
+                 if not enemy_alive and enemy:
+                     player.speed=5
+                 if enemy_alive and random.randint(0, 4) == 0 and enemy:
+                     enemy.UPDATEenemy(solid_sprites)
+                 if enemy_alive and pygame.sprite.collide_mask(player, enemy) and enemy:
+                     player.rect.topleft = (100,100)
+                     Lives-=1
+                     pygame.display.set_caption("Lives: "+str(Lives))
+                 if pygame.sprite.collide_mask(player, key):
+                     inventory.append("JailKey")
+                     key.rect.topleft = (-100,-100)
                  if player.rect.bottom > 1050:
                      bullets.empty()
                      all_sprites.empty()
@@ -1394,6 +1425,7 @@ def main():
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
                      player.rect.topleft = (playerX, 25)
+
          if LOCATION==6:
             background_color=(72,111,56)
             screen.fill(background_color) 
@@ -1413,37 +1445,65 @@ def main():
                      file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
                      all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
                      player.rect.topleft = (960, playerY)
-                 if cabin and pygame.sprite.collide_mask(player, cabin):
+                 if cabin and pygame.sprite.collide_mask(player, cabin) and not "JailKey" in inventory:
                      player.rect.topleft = (playerX, playerY)
+                 if cabin and pygame.sprite.collide_mask(player, cabin) and "JailKey" in inventory:
+                     bullets.empty()
+                     all_sprites.empty()
+                     LOCATION=7
+                     file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
+                     all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites, keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites, key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)                    
 
+         if LOCATION==7:
+            background_color=(138, 136, 134)
+            screen.fill(background_color) 
+            if not level_won:
+                 if not enteredJail:
+                    for sprite in wall_sprites:
+                      sprite.image = pygame.image.load("JailWall.png").convert()
+                      sprite.image = pygame.transform.scale(sprite.image, (TILE_SIZE, TILE_SIZE))
+                    enteredJail=True
+                 solid_sprites= pygame.sprite.Group(wall_sprites,cavewall_sprites,housewall_sprites,basementwall_sprites,crate_sprites, bed_sprites, stand_sprites, rock_sprites, table_sprites, bush_sprites, tree_sprites)
+                 player.update(wall_sprites, rock_sprites, tree_sprites, cavewall_sprites,bush_sprites, housewall_sprites, hole_sprites, crate_sprites, basementwall_sprites, movement, couch, stand_sprites, stove, bed_sprites, box, inventory, table_sprites)
+   
 
-
-                     
-
-                     
-                 
-
-                 
-                 
-                 
-                 
-    
-         for bullet in bullets:
-            if pygame.sprite.spritecollide(bullet, solid_sprites, False):
-               bullet.kill()
-            if enemy and pygame.sprite.collide_mask(bullet, enemy):
-               bullet.kill()
-         if enemy and Paper_Lives<=0:
-            enemy_alive=False
-            enemy.rect.topleft = (-1000, -1000) 
+               
+             
+         if LOCATION==3:
+            if enemy and Paper_Lives<=0:
+               enemy_alive=False
+               enemy.rect.topleft = (-1000, -1000) 
+            for scissor in scissors:
+               if pygame.sprite.spritecollide(scissor, solid_sprites, False):
+                  scissor.kill()
+               if enemy and pygame.sprite.collide_mask(scissor, enemy):
+                  scissor.kill()
+                  Paper_Lives-=1
+         if LOCATION==5:
+            enemyX=enemy.rect.x
+            enemyY=enemy.rect.y
+            for scissor in scissors:
+               if pygame.sprite.spritecollide(scissor, solid_sprites, False):
+                  scissor.kill()
+               if enemy and pygame.sprite.collide_mask(scissor, enemy):
+                  scissor.kill()  
+            for bullet in bullets:
+               if pygame.sprite.spritecollide(bullet, solid_sprites, False):
+                   bullet.kill()
+               if enemy and pygame.sprite.collide_mask(bullet, enemy):
+                   bullet.kill()    
+                   Chromebook2_Lives-=1 
+                   if Chromebook2_Lives<=0:
+                     enemy_alive=False
+                     enemy.rect.topleft = (-1000, -1000)
+                     key.rect.topleft = (enemyX, enemyY)
          for scissor in scissors:
-            if pygame.sprite.spritecollide(scissor, solid_sprites, False):
-               scissor.kill()
-            if enemy and pygame.sprite.collide_mask(scissor, enemy):
-               scissor.kill()
-               Paper_Lives-=1
+               if pygame.sprite.spritecollide(scissor, solid_sprites, False):
+                  scissor.kill()
+         for bullet in bullets:
+               if pygame.sprite.spritecollide(bullet, solid_sprites, False):
+                   bullet.kill()
 
-                     
          scissors.update()
          bullets.update()
          all_sprites.draw(screen)
@@ -1451,6 +1511,13 @@ def main():
          bullets.draw(screen)
          pygame.display.flip()  
          if Lives<=0:
+            L1L6EnemyDirection="+"
+            Phone_Lives=10
+            Chromebook_Lives=30
+            Chromebook2_Lives=1
+            Paper_Lives=30
+            enteredJail=False
+            enemy_alive=False
             collidedkeybush=False
             collidedCabinChest=False
             inventory=[]
@@ -1464,6 +1531,5 @@ def main():
             file="L"+str(LEVEL)+"L"+str(LOCATION)+".txt"
             all_sprites, wall_sprites, player, tree_sprites, cave, rock_sprites, cavewall_sprites, diamond, lava_sprites, bush_sprites,keybush, cabin, housewall_sprites,chest, gun, knife, enemy, hole_sprites, crate_sprites,\
             key, NPC, door_sprites, basementwall_sprites, bed_sprites, stand_sprites, stove, couch, box, potion, mountain, rope, lake, KeyPiece, table_sprites, rug = load_maze(file)
-
       clock.tick(FPS)
 main()
